@@ -13,3 +13,5 @@ idx = st.number_input(
 piece = MidiPiece.from_huggingface(dataset[idx])
 
 streamlit_pianoroll.from_fortepyan(piece[:500])
+
+st.json(piece.source)
