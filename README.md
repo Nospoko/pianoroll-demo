@@ -1,6 +1,6 @@
 ---
 title: Pianoroll Demo
-emoji: 🐢
+emoji: 🎹
 colorFrom: green
 colorTo: pink
 sdk: streamlit
