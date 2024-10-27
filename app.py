@@ -1,17 +1,40 @@
 import streamlit as st
 import streamlit_pianoroll
-from datasets import load_dataset
 from fortepyan import MidiPiece
 
-dataset = load_dataset("epr-labs/maestro-sustain-v2", split="train")
-idx = st.number_input(
-    label="Piece IDX",
-    min_value=0,
-    max_value=len(dataset) - 1,
-    value=420,
+piece = MidiPiece.from_file("haydn.mid")
+
+st.write("## Display a PianoRoll player")
+streamlit_pianoroll.from_fortepyan(piece)
+
+st.write("## Conditional coloring")
+st.write("Absolute pitch value condition")
+df = piece.df.copy()
+
+ids = df.pitch > 60
+
+part_a = df[ids]
+part_b = df[~ids]
+piece_a = MidiPiece(df=part_a)
+piece_b = MidiPiece(df=part_b)
+
+streamlit_pianoroll.from_fortepyan(
+    piece=piece_a,
+    secondary_piece=piece_b,
 )
-piece = MidiPiece.from_huggingface(dataset[idx])
 
-streamlit_pianoroll.from_fortepyan(piece[:500])
+st.write("Note duration condition")
 
-st.json(piece.source)
+df = piece.df.copy()
+
+ids = df.duration > 0.23
+
+part_a = df[ids]
+part_b = df[~ids]
+piece_a = MidiPiece(df=part_a)
+piece_b = MidiPiece(df=part_b)
+
+streamlit_pianoroll.from_fortepyan(
+    piece=piece_a,
+    secondary_piece=piece_b,
+)
