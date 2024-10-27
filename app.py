@@ -45,8 +45,8 @@ pitch_threshold = st.number_input(
 )
 ids = df.pitch > pitch_threshold
 
-part_a = df[ids]
-part_b = df[~ids]
+part_a = df[ids].copy()
+part_b = df[~ids].copy()
 piece_a = MidiPiece(df=part_a)
 piece_b = MidiPiece(df=part_b)
 
@@ -85,8 +85,8 @@ duration_threshold = st.number_input(
 
 ids = df.duration > duration_threshold
 
-part_a = df[ids]
-part_b = df[~ids]
+part_a = df[ids].copy()
+part_b = df[~ids].copy()
 piece_a = MidiPiece(df=part_a)
 piece_b = MidiPiece(df=part_b)
 
