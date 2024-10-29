@@ -1,3 +1,4 @@
+import numpy as np
 import streamlit as st
 import streamlit_pianoroll
 from fortepyan import MidiPiece
@@ -14,6 +15,8 @@ def main():
 
 def piano_music_demo():
     piece = MidiPiece.from_file("haydn.mid")
+    # TODO Improve fortepyan to make this cleaner
+    piece.time_shift(-piece.df.start.min())
 
     st.write("## Display a PianoRoll player")
     st.write("""
@@ -41,6 +44,11 @@ def piano_music_demo():
     create two `MidiPiece` objects, each containing the notes for one color.
     """)
     st.write("#### Absolute pitch value condition")
+    st.write("""
+    Here's how to highlight notes with pitch above or below a certain threshold.
+    Value of pitch 60 corresponds to the middle C (C4) on a piano keyboard
+    ([refrence table](https://inspiredacoustics.com/en/MIDI_note_numbers_and_center_frequencies)).
+    """)
 
     code = """
     df = piece.df
@@ -79,6 +87,9 @@ def piano_music_demo():
     )
 
     st.write("#### Note duration condition")
+    st.write("""
+    Here's how to highlight notes based on their absolute duration, which can differentiate between fast and slow notes.
+    """)
 
     code = """
     df = piece.df
@@ -100,7 +111,7 @@ def piano_music_demo():
     df = piece.df.copy()
 
     duration_threshold = st.number_input(
-        label="duration threshold",
+        label="duration threshold [s]",
         min_value=0.05,
         max_value=5.,
         value=0.25,
@@ -111,6 +122,31 @@ def piano_music_demo():
     part_a = df[ids].copy()
     part_b = df[~ids].copy()
     piece_a = MidiPiece(df=part_a)
+    piece_b = MidiPiece(df=part_b)
+
+    streamlit_pianoroll.from_fortepyan(
+        piece=piece_a,
+        secondary_piece=piece_b,
+    )
+
+    st.write("#### Music generation prompting")
+    st.write("""
+    Here's how to highlight show results of a generative algorithm that is supposed to work musically with an input from.
+    We can take the notes with pitch below 72 (C5) as a prompt, and display it together with the generation.
+    This sample performs random shuffle of the note pitch values, so the results are not muscially great (your algorithms should be better).
+    """)
+
+    df = piece.df.copy()
+
+    ids = df.pitch < 72
+
+    part_a = df[ids].copy()
+    piece_a = MidiPiece(df=part_a)
+
+    # Fake random algorithm
+    part_b = df[~ids].copy()
+    part_b.pitch = np.random.permutation(part_b.pitch)
+    part_b.velocity = np.random.permutation(part_b.velocity)
     piece_b = MidiPiece(df=part_b)
 
     streamlit_pianoroll.from_fortepyan(
