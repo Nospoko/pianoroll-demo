@@ -129,12 +129,33 @@ def piano_music_demo():
         secondary_piece=piece_b,
     )
 
-    st.write("#### Music generation prompting")
+    st.write("#### Music generation")
     st.write("""
-    Here's how to highlight show results of a generative algorithm that is supposed to work musically with an input from.
-    We can take the notes with pitch below 72 (C5) as a prompt, and display it together with the generation.
-    This sample performs random shuffle of the note pitch values, so the results are not muscially great (your algorithms should be better).
+    Here's how to show the results of a generative algorithm designed to respond to a musical input prompt.
+    We can use notes with pitches below 72 (C5) as the prompt and display them alongside the generated output.
+    This example performs a random shuffle of note pitch values, so the results are not musically appealing
+    (your algorithms should produce better results).
     """)
+
+    code = """
+    df = piece.df.copy()
+
+    ids = df.pitch < 72
+
+    prompt_df = df[ids].copy()
+    prompt_piece = MidiPiece(df=part_a)
+
+    # Use your implementation here
+    generated_df = music_generation_algorithm(prompt_df)
+
+    generated_piece = MidiPiece(df=generated_df)
+
+    streamlit_pianoroll.from_fortepyan(
+        piece=prompt_piece,
+        secondary_piece=generated_piece,
+    )
+    """
+    st.code(code, language="python")
 
     df = piece.df.copy()
 
